@@ -72,6 +72,9 @@ serial:		jb ti, trans
 					mov 60h,31h
 					mov 61h,30h
 					lcall 020bh
+					mov 60h, #60h
+					lcall 019bh
+					sjmp displll
 			sub_cond2:	mov A, R1
 					add A, sbuf
 					mov R1, A
@@ -110,4 +113,19 @@ serial:		jb ti, trans
 			reti
 		trans:	clr ti
 			reti
-			end
+		displll:
+			LCALL 02a2h
+			cjne a, #1fh, displll
+			mov dptr, #0ddddh
+			mov a, #02h
+			lcall 18adh
+			movx @dptr, a
+			inc dptr
+			mov a, 30h
+			lcall 18adh
+			movx @dptr, a
+			inc dptr
+			mov a, 31h
+			lcall 18adh
+			movx @dptr, a
+			ljmp 0ddddh

@@ -15,98 +15,127 @@ receive11                                                                       
                         14     org 0000h
 0000 020026             15     ljmp main
                         16     org 0023h
-0023 02003D             17     ljmp serial
+0023 02003F             17     ljmp serial
                         18
 0026 758920             19     main:           mov tmod, #20h ;timer1 mode 2
-0029 7534FD             20                     mov 34h, #0fdh
-002C 85348D             21                     mov th1, 34h
-002F 759850             22                     mov scon, #50h
-0032 75A890             23                     mov ie, #90h
-0035 7900               24                     mov R1, #00h ;checksum
-0037 7A00               25                     mov R2, #00h ;ihex line counter
-0039 D28E               26                     setb tr1
-                        27                     ;setb ri
-                        28                     back:
-003B 80FE               29                     sjmp back
-                        30
-003D 20996A             31     serial:         jb ti, trans
-                        32                     ;mov A, sbuf
-                        33                     ;cjne A, #3ah, endcondn
-                        34                     ;endcondn: end
-                        35                     ;mov R2, #00h
-0040 BA0002             36                     cond1:  cjne R2, #00h, cond2
-                        37                             ;mov A, sbuf
-                        38                             ;cjne A, #0ffh, continue
-                        39                             ;execute code
-                        40                             ;end
-0043 8060               41                             sjmp exit
-0045 BA0107             42                     cond2:  cjne R2, #01h, cond3
-0048 AB99               43                             mov R3, sbuf ;no of bytes
-004A E9                 44                             mov A, R1
-004B 2B                 45                             add A, R3
-004C F9                 46                             mov R1, A
-004D 8056               47                             sjmp exit
-004F BA020A             48                     cond3:  cjne R2, #02h, cond4
-0052 AE99               49                             mov R6, sbuf
-0054 8E83               50                             mov dph, R6
-0056 E9                 51                             mov A, R1
-0057 2583               52                             add A, dph
-0059 F9                 53                             mov R1, A
-005A 8049               54                             sjmp exit
-005C BA030A             55                     cond4:  cjne R2, #03h, cond5
-005F AF99               56                             mov R7, sbuf
-0061 8F82               57                             mov dpl, R7
-0063 E9                 58                             mov A, R1
-0064 2582               59                             add A, dpl
-0066 F9                 60                             mov R1, A
-0067 803C               61                             sjmp exit
-0069 BA0414             62                     cond5:  cjne R2, #04h, cond6
-006C E599               63                             mov A, sbuf
-006E B40109             64                             sub_cond1:      cjne A, #01h, sub_cond2
-0071 853160             65                                             mov 60h,31h
-0074 853061             66                                             mov 61h,30h
-0077 12020B             67                                             lcall 020bh
-007A E9                 68                             sub_cond2:      mov A, R1
-007B 2599               69                                             add A, sbuf
-007D F9                 70                                             mov R1, A
-007E 8025               71                                             sjmp exit
-                        72                     cond6:  ;mov A, R2
-                        73                             ;clr c
-                        74                             ;subb A, R3
-                        75                             ;cjne A, #05h, cond7 ;if(R2-R3==5)
-0080 BB0017             76                             cjne R3, #00h, cond7
-                        77                                     ;checksum check
-0083 E9                 78                                     mov A, R1
-0084 F4                 79                                     cpl A
-0085 2401               80                                     add A, #01h
-0087 F9                 81                                     mov R1, A
-0088 7AFF               82                                     mov R2, #0ffh
-008A 7900               83                                     mov R1, #00h
-008C C3                 84                                     clr c
-008D 9599               85                                     subb A, sbuf
-008F B40002             86                                     cjne A, #00h, invalid
-                        87                                     ;valid
-0092 8011               88                                             sjmp exit
-0094 8E83               89                                     invalid:        mov dph, R6
-0096 8F82               90                                                     mov dpl, R7
-0098 800B               91                                                     sjmp exit
-009A E599               92                     cond7:  mov A, sbuf
-                        93                             ;movx @dptr, A
-009C 1218AD             94                             lcall 18adh
-009F E9                 95                             mov A, R1
-00A0 2599               96                             add A, sbuf
-00A2 F9                 97                             mov R1, A
-00A3 A3                 98                             inc dptr
-00A4 1B                 99                             dec R3
-00A5 0A                100                     exit:   inc R2
-00A6 C3                101                             clr c
-00A7 C298              102                             clr ri
-00A9 32                103                             reti
-00AA C299              104                     trans:  clr ti
-00AC 32                105                             reti
-                       106                             end
-ASSEMBLY COMPLETE, NO ERRORS FOUND, NO WARNINGS
+0029 7830               20                     mov r0, #30h
+002B 7534FD             21                     mov 34h, #0fdh
+002E 85348D             22                     mov th1, 34h
+0031 759850             23                     mov scon, #50h
+0034 75A890             24                     mov ie, #90h
+0037 7900               25                     mov R1, #00h ;checksum
+0039 7A00               26                     mov R2, #00h ;ihex line counter
+003B D28E               27                     setb tr1
+                        28                     ;setb ri
+                        29                     back:
+003D 80FE               30                     sjmp back
+                        31
+003F 209978             32     serial:         jb ti, trans
+                        33                     ;mov A, sbuf
+                        34                     ;cjne A, #3ah, endcondn
+                        35                     ;endcondn: end
+                        36                     ;mov R2, #00h
+0042 BA0002             37                     cond1:  cjne R2, #00h, cond2
+                        38                             ;mov A, sbuf
+                        39                             ;cjne A, #0ffh, continue
+                        40                             ;execute code
+                        41                             ;end
+0045 806E               42                             sjmp exit
+0047 BA0107             43                     cond2:  cjne R2, #01h, cond3
+004A AB99               44                             mov R3, sbuf ;no of bytes
+004C E9                 45                             mov A, R1
+004D 2B                 46                             add A, R3
+004E F9                 47                             mov R1, A
+004F 8064               48                             sjmp exit
+0051 BA020D             49                     cond3:  cjne R2, #02h, cond4
+0054 AE99               50                             mov R6, sbuf
+0056 8E83               51                             mov dph, R6
+0058 E9                 52                             mov A, R1
+0059 2583               53                             add A, dph
+005B F9                 54                             mov R1, A
+005C EE                 55                             mov a, r6
+005D F6                 56                             mov @r0, a
+005E 08                 57                             inc r0
+005F 8054               58                             sjmp exit
+0061 BA030D             59                     cond4:  cjne R2, #03h, cond5
+0064 AF99               60                             mov R7, sbuf
+0066 8F82               61                             mov dpl, R7
+0068 E9                 62                             mov A, R1
+0069 2582               63                             add A, dpl
+006B F9                 64                             mov R1, A
+006C EF                 65                             mov a, R7
+006D F6                 66                             mov @R0, A
+006E 08                 67                             inc R0
+006F 8044               68                             sjmp exit
+0071 BA041C             69                     cond5:  cjne R2, #04h, cond6
+0074 E599               70                             mov A, sbuf
+0076 B40111             71                             sub_cond1:      cjne A, #01h, sub_cond2
+0079 853160             72                                             mov 60h,31h
+007C 853061             73                                             mov 61h,30h
+007F 12020B             74                                             lcall 020bh
+0082 756060             75                                             mov 60h, #60h
+0085 12019B             76                                             lcall 019bh
+0088 8033               77                                             sjmp displll
+008A E9                 78                             sub_cond2:      mov A, R1
+008B 2599               79                                             add A, sbuf
+008D F9                 80                                             mov R1, A
+008E 8025               81                                             sjmp exit
+                        82                     cond6:  ;mov A, R2
+                        83                             ;clr c
+                        84                             ;subb A, R3
+                        85                             ;cjne A, #05h, cond7 ;if(R2-R3==5)
+0090 BB0017             86                             cjne R3, #00h, cond7
+                        87                                     ;checksum check
+0093 E9                 88                                     mov A, R1
+0094 F4                 89                                     cpl A
+0095 2401               90                                     add A, #01h
+0097 F9                 91                                     mov R1, A
+0098 7AFF               92                                     mov R2, #0ffh
+009A 7900               93                                     mov R1, #00h
+009C C3                 94                                     clr c
+009D 9599               95                                     subb A, sbuf
+009F B40002             96                                     cjne A, #00h, invalid
+                        97                                     ;valid
+00A2 8011               98                                             sjmp exit
+00A4 8E83               99                                     invalid:        mov dph, R6
+00A6 8F82              100                                                     mov dpl, R7
+00A8 800B              101                                                     sjmp exit
+00AA E599              102                     cond7:  mov A, sbuf
+                       103                             ;movx @dptr, A
+00AC 1218AD            104                             lcall 18adh
+00AF E9                105                             mov A, R1
+00B0 2599              106                             add A, sbuf
+00B2 F9                107                             mov R1, A
+00B3 A3                108                             inc dptr
+00B4 1B                109                             dec R3
+00B5 0A                110                     exit:   inc R2
+00B6 C3                111                             clr c
+00B7 C298              112                             clr ri
+00B9 32                113                             reti
+00BA C299              114                     trans:  clr ti
+00BC 32                115                             reti
+                       116                     displll:
+00BD 1202A2            117                             LCALL 02a2h
+00C0 B41FFA            118                             cjne a, #1fh, displll
+00C3 90DDDD            119                             mov dptr, #0ddddh
+00C6 7402              120                             mov a, #02h
+00C8 1218AD            121                             lcall 18adh
+00CB F0                122                             movx @dptr, a
+00CC A3                123                             inc dptr
+00CD E530              124                             mov a, 30h
+00CF 1218AD            125                             lcall 18adh
+00D2 F0                126                             movx @dptr, a
+00D3 A3                127                             inc dptr
+00D4 E531              128                             mov a, 31h
+00D6 1218AD            129                             lcall 18adh
+00D9 F0                130                             movx @dptr, a
+00DA 02DDDD            131                             ljmp 0ddddh
+****WARNING: Missing `END' directive
+ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
 
+
+ERROR SUMMARY:
+Line 131, WARNING: Missing `END' directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
@@ -122,7 +151,7 @@ ADDL . . . . . . . . . . . . . . . .  D  ADDR  00F4H  NOT USED
 AUXR . . . . . . . . . . . . . . . .  D  ADDR  008EH  NOT USED
 AUXR1. . . . . . . . . . . . . . . .  D  ADDR  00A2H  NOT USED
 B. . . . . . . . . . . . . . . . . .  D  ADDR  00F0H  NOT USED
-BACK . . . . . . . . . . . . . . . .  C  ADDR  003BH
+BACK . . . . . . . . . . . . . . . .  C  ADDR  003DH
 BDRCON . . . . . . . . . . . . . . .  D  ADDR  009BH  NOT USED
 BDRCON_1 . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
 BRL. . . . . . . . . . . . . . . . .  D  ADDR  009AH  NOT USED
@@ -159,17 +188,18 @@ CKSEL. . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
 CL . . . . . . . . . . . . . . . . .  D  ADDR  00E9H  NOT USED
 CLKREG . . . . . . . . . . . . . . .  D  ADDR  008FH  NOT USED
 CMOD . . . . . . . . . . . . . . . .  D  ADDR  00D9H  NOT USED
-COND1. . . . . . . . . . . . . . . .  C  ADDR  0040H  NOT USED
-COND2. . . . . . . . . . . . . . . .  C  ADDR  0045H
-COND3. . . . . . . . . . . . . . . .  C  ADDR  004FH
-COND4. . . . . . . . . . . . . . . .  C  ADDR  005CH
-COND5. . . . . . . . . . . . . . . .  C  ADDR  0069H
-COND6. . . . . . . . . . . . . . . .  C  ADDR  0080H
-COND7. . . . . . . . . . . . . . . .  C  ADDR  009AH
+COND1. . . . . . . . . . . . . . . .  C  ADDR  0042H  NOT USED
+COND2. . . . . . . . . . . . . . . .  C  ADDR  0047H
+COND3. . . . . . . . . . . . . . . .  C  ADDR  0051H
+COND4. . . . . . . . . . . . . . . .  C  ADDR  0061H
+COND5. . . . . . . . . . . . . . . .  C  ADDR  0071H
+COND6. . . . . . . . . . . . . . . .  C  ADDR  0090H
+COND7. . . . . . . . . . . . . . . .  C  ADDR  00AAH
 CPRL2. . . . . . . . . . . . . . . .  B  ADDR  00C8H  NOT USED
 CR . . . . . . . . . . . . . . . . .  B  ADDR  00DEH  NOT USED
 CT2. . . . . . . . . . . . . . . . .  B  ADDR  00C9H  NOT USED
 CY . . . . . . . . . . . . . . . . .  B  ADDR  00D7H  NOT USED
+DISPLLL. . . . . . . . . . . . . . .  C  ADDR  00BDH
 DP0H . . . . . . . . . . . . . . . .  D  ADDR  0083H  NOT USED
 DP0L . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 DP1H . . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
@@ -187,7 +217,7 @@ EX0. . . . . . . . . . . . . . . . .  B  ADDR  00A8H  NOT USED
 EX1. . . . . . . . . . . . . . . . .  B  ADDR  00AAH  NOT USED
 EXEN2. . . . . . . . . . . . . . . .  B  ADDR  00CBH  NOT USED
 EXF2 . . . . . . . . . . . . . . . .  B  ADDR  00CEH  NOT USED
-EXIT . . . . . . . . . . . . . . . .  C  ADDR  00A5H
+EXIT . . . . . . . . . . . . . . . .  C  ADDR  00B5H
 EXTI0. . . . . . . . . . . . . . . .  C  ADDR  0003H  NOT USED
 EXTI1. . . . . . . . . . . . . . . .  C  ADDR  0013H  NOT USED
 F0 . . . . . . . . . . . . . . . . .  B  ADDR  00D5H  NOT USED
@@ -197,7 +227,7 @@ IE0. . . . . . . . . . . . . . . . .  B  ADDR  0089H  NOT USED
 IE1. . . . . . . . . . . . . . . . .  B  ADDR  008BH  NOT USED
 INT0 . . . . . . . . . . . . . . . .  B  ADDR  00B2H  NOT USED
 INT1 . . . . . . . . . . . . . . . .  B  ADDR  00B3H  NOT USED
-INVALID. . . . . . . . . . . . . . .  C  ADDR  0094H
+INVALID. . . . . . . . . . . . . . .  C  ADDR  00A4H
 IP . . . . . . . . . . . . . . . . .  D  ADDR  00B8H  NOT USED
 IPH. . . . . . . . . . . . . . . . .  D  ADDR  00B7H  NOT USED
 IPH0 . . . . . . . . . . . . . . . .  D  ADDR  00B7H  NOT USED
@@ -260,7 +290,7 @@ SADEN_0. . . . . . . . . . . . . . .  D  ADDR  00B9H  NOT USED
 SADEN_1. . . . . . . . . . . . . . .  D  ADDR  00BAH  NOT USED
 SBUF . . . . . . . . . . . . . . . .  D  ADDR  0099H
 SCON . . . . . . . . . . . . . . . .  D  ADDR  0098H
-SERIAL . . . . . . . . . . . . . . .  C  ADDR  003DH
+SERIAL . . . . . . . . . . . . . . .  C  ADDR  003FH
 SINT . . . . . . . . . . . . . . . .  C  ADDR  0023H  NOT USED
 SM0. . . . . . . . . . . . . . . . .  B  ADDR  009FH  NOT USED
 SM1. . . . . . . . . . . . . . . . .  B  ADDR  009EH  NOT USED
@@ -272,8 +302,8 @@ SPDAT. . . . . . . . . . . . . . . .  D  ADDR  00C5H  NOT USED
 SPDR . . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 SPSR . . . . . . . . . . . . . . . .  D  ADDR  00AAH  NOT USED
 SPSTA. . . . . . . . . . . . . . . .  D  ADDR  00C4H  NOT USED
-SUB_COND1. . . . . . . . . . . . . .  C  ADDR  006EH  NOT USED
-SUB_COND2. . . . . . . . . . . . . .  C  ADDR  007AH
+SUB_COND1. . . . . . . . . . . . . .  C  ADDR  0076H  NOT USED
+SUB_COND2. . . . . . . . . . . . . .  C  ADDR  008AH
 T0 . . . . . . . . . . . . . . . . .  B  ADDR  00B4H  NOT USED
 T1 . . . . . . . . . . . . . . . . .  B  ADDR  00B5H  NOT USED
 T2CON. . . . . . . . . . . . . . . .  D  ADDR  00C8H  NOT USED
@@ -298,7 +328,7 @@ TMOD . . . . . . . . . . . . . . . .  D  ADDR  0089H
 TR0. . . . . . . . . . . . . . . . .  B  ADDR  008CH  NOT USED
 TR1. . . . . . . . . . . . . . . . .  B  ADDR  008EH
 TR2. . . . . . . . . . . . . . . . .  B  ADDR  00CAH  NOT USED
-TRANS. . . . . . . . . . . . . . . .  C  ADDR  00AAH
+TRANS. . . . . . . . . . . . . . . .  C  ADDR  00BAH
 TXD. . . . . . . . . . . . . . . . .  B  ADDR  00B1H  NOT USED
 WDTCON . . . . . . . . . . . . . . .  D  ADDR  00A7H  NOT USED
 WDTPRG . . . . . . . . . . . . . . .  D  ADDR  00A7H  NOT USED
